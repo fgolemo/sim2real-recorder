@@ -10,7 +10,7 @@ class Server():
         self.socket.bind("tcp://*:%s" % port)
         self.cb = self.noop
 
-    def noop(self, msg):
+    def noop(self, msg, send):
         pass
 
     def welcome(self):
@@ -28,10 +28,11 @@ class Server():
             elif (msg == "numpy"):
                 msg = self.recv_array()
 
-            self.cb(msg)
+            self.cb(msg, self.send_array)
 
     def send_array(self, A, flags=0, copy=True, track=False):
         """send a numpy array with metadata"""
+
         md = dict(
             dtype=str(A.dtype),
             shape=A.shape,
