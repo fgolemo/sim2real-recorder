@@ -8,8 +8,12 @@ from exchange.server import Server
 
 poppy = PoppyErgoJr()
 
-for m in poppy.motors:
-    m.goal_speed = INITIAL_SPEED
+
+def set_robot_speed(speed):
+    for m in poppy.motors:
+        m.goal_speed = speed
+
+set_robot_speed(INITIAL_SPEED)
 
 server = Server()
 
@@ -58,6 +62,7 @@ def handle_message(msg, send):
 
     # run 3 actions, while recording into buffer
     for action_idx, action in enumerate(actions):
+        set_robot_speed(SPEEDS[action_idx])
         frames = []
         time_start = time.time()
         action_was_run = False
@@ -84,6 +89,8 @@ def handle_message(msg, send):
 
     episode_buffer.fill(0.0)
 
+
+robot_rest()
 
 server.register_callback(handle_message)
 server.start_main_loop()
