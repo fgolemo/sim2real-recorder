@@ -1,6 +1,8 @@
 import numpy
 import zmq
 
+from exchange.utilities import zmq_recv_array, zmq_send_array
+
 
 class Server():
     def __init__(self, port="5556"):
@@ -31,19 +33,7 @@ class Server():
             self.cb(msg, self.send_array)
 
     def send_array(self, A, flags=0, copy=True, track=False):
-        """send a numpy array with metadata"""
-
-        md = dict(
-            dtype=str(A.dtype),
-            shape=A.shape,
-        )
-        self.socket.send_json(md, flags | zmq.SNDMORE)
-        return self.socket.send(A, flags, copy=copy, track=track)
+        return zmq_send_array(self.socket, A, flags, copy, track)
 
     def recv_array(self, flags=0, copy=True, track=False):
-        """recv a numpy array"""
-        md = self.socket.recv_json(flags=flags)
-        msg = self.socket.recv(flags=flags, copy=copy, track=track)
-        buf = buffer(msg)
-        A = numpy.frombuffer(buf, dtype=md['dtype'])
-        return A.reshape(md['shape'])
+        return zmq_recv_array(self.socket, flags, copy, track)
