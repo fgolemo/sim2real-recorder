@@ -12,11 +12,11 @@ server = Server()
 
 # server.welcome()
 
-line_buffer = np.zeros((6, 3), dtype=np.float32)
 episode_buffer = np.zeros((SECONDS_OF_RECORDING * MAX_ROBO_FPS, NUMBER_OF_ACTIONS_PER_EPISODE, 6, 3))
 
 
-def getRobotData():
+def getRobotData(poppy):
+    line_buffer = np.zeros((6, 3), dtype=np.float32)
     for motor_idx, motor in enumerate(poppy.motors):
         line_buffer[motor_idx] = [
             motor.present_position,
@@ -47,7 +47,6 @@ def robot_rest():
 
 
 def handle_message(msg, send):
-    print ("GOT MSG")
     # whenever the server gets a string msg:
 
     # split string into 3 actions
@@ -59,8 +58,7 @@ def handle_message(msg, send):
         time_start = time.time()
         action_was_run = False
         while True:
-            robot_data = getRobotData()
-            frames.append(robot_data)
+            frames.append(getRobotData(poppy))
             time.sleep(0.01)  # this caps FPS at around 94 - so we should reserve 100 elements in memory
             if not action_was_run:
                 run_action_on_robot(action)

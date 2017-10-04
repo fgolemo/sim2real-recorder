@@ -1,7 +1,9 @@
+import h5py
 import time
 
 import numpy as np
 import zmq
+from tqdm import tqdm
 
 from config.constants import *
 from exchange.utilities import zmq_recv_array
@@ -39,7 +41,28 @@ def move_robot(action):
     output = "|".join(out)
     socket.send_string(output)
 
-for episode_idx in range(len(ds.moves)):
+def save_stuff(data_buf, episode_idx):
+    # print ("got robo frames and kinect frames:")
+    # print ("robo:", robo_frames.shape)
+    # print ("kinect:", frames.shape)
+
+    data_kinect, data_robo = data_buf
+    data_kinect = np.array(data_kinect)
+    data_robo = np.array(data_robo)
+
+    np.savez_compressed("data/data_dump.npz", kinect=data_kinect, robo=data_robo)
+
+    # hf = h5py.File('data/test-recording.h5', 'w')
+    #
+    # hf.create_dataset('kinect', data=data_kin)
+    # hf.create_dataset('robo', data=data_robo)
+    #
+    # hf.close()
+    print ("SAVED. Episode {}".format(episode_idx))
+
+data_buffer = []
+
+for episode_idx in tqdm(range(len(ds.moves))):
     actions = np.around(ds.moves[episode_idx, :, 0, :], 2)
     frames = []
     move_robot(actions)
@@ -51,11 +74,9 @@ for episode_idx in range(len(ds.moves)):
             if socks.get(socket) == zmq.POLLIN:
                 robo_frames = zmq_recv_array(socket)
                 frames = np.array(frames)
-                print ("got robo frames and kinect frames:")
-                print ("robo:",robo_frames.shape)
-                print ("kinect:",frames.shape)
-                np.savez("data/test-recording.npz", kinect=frames, robo=robo_frames)
-                kinect.close()
-                quit()
+                data_buffer.append((frames, robo_frames))
+                break
+    if episode_idx % 10 == 0:
+        save_stuff(data_buffer, episode_idx)
 
 kinect.close()

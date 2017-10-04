@@ -1,7 +1,7 @@
 BOUNDARIES = { # img is right-left flipped
     "top": 90,
     "left": 100,
-    "right": 350,
+    "right": 340,
     "bottom": 330
 }
 
