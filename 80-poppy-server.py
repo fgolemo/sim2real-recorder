@@ -8,11 +8,15 @@ from exchange.server import Server
 
 poppy = PoppyErgoJr()
 
+for m in poppy.motors:
+    m.goal_speed = INITIAL_SPEED
+
 server = Server()
 
 # server.welcome()
 
 episode_buffer = np.zeros((SECONDS_OF_RECORDING * MAX_ROBO_FPS, NUMBER_OF_ACTIONS_PER_EPISODE, 6, 3))
+
 
 
 def getRobotData(poppy):

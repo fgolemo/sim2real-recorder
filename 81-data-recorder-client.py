@@ -1,9 +1,8 @@
-import h5py
-import time
-
 import numpy as np
+import shutil
 import zmq
 from tqdm import tqdm
+import os
 
 from config.constants import *
 from exchange.utilities import zmq_recv_array
@@ -34,6 +33,7 @@ print (frame.shape)
 
 ds_shape = ds.moves.shape
 
+
 def move_robot(action):
     out = []
     for row in range(len(action)):
@@ -41,16 +41,17 @@ def move_robot(action):
     output = "|".join(out)
     socket.send_string(output)
 
-def save_stuff(data_buf, episode_idx):
+
+def save_stuff(data_buf_kinect, data_buf_robo, episode_idx):
     # print ("got robo frames and kinect frames:")
     # print ("robo:", robo_frames.shape)
     # print ("kinect:", frames.shape)
 
-    data_kinect, data_robo = data_buf
-    data_kinect = np.array(data_kinect)
-    data_robo = np.array(data_robo)
+    data_kinect = np.array(data_buf_kinect)
+    data_robo = np.array(data_buf_robo)
 
-    np.savez_compressed("data/data_dump.npz", kinect=data_kinect, robo=data_robo)
+    np.savez_compressed("data/data_dump_tmp.npz", kinect=data_kinect, robo=data_robo)
+    shutil.move("data/data_dump_tmp.npz", "data/data_dump.npz")
 
     # hf = h5py.File('data/test-recording.h5', 'w')
     #
@@ -60,7 +61,9 @@ def save_stuff(data_buf, episode_idx):
     # hf.close()
     print ("SAVED. Episode {}".format(episode_idx))
 
-data_buffer = []
+
+data_buffer_kinect = []
+data_buffer_robo = []
 
 for episode_idx in tqdm(range(len(ds.moves))):
     actions = np.around(ds.moves[episode_idx, :, 0, :], 2)
@@ -69,14 +72,15 @@ for episode_idx in tqdm(range(len(ds.moves))):
     while True:
         frame = kinect.getFrame()
         frames.append(frame)
-        socks = dict(poller.poll(1000*ROBO_FPD_DELAY))
+        socks = dict(poller.poll(1000 * ROBO_FPD_DELAY))
         if socks:
             if socks.get(socket) == zmq.POLLIN:
                 robo_frames = zmq_recv_array(socket)
                 frames = np.array(frames)
-                data_buffer.append((frames, robo_frames))
+                data_buffer_kinect.append(frames)
+                data_buffer_robo.append(robo_frames)
                 break
     if episode_idx % 10 == 0:
-        save_stuff(data_buffer, episode_idx)
+        save_stuff(data_buffer_kinect, data_buffer_robo, episode_idx)
 
 kinect.close()
