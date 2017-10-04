@@ -91,7 +91,7 @@ for episode_idx in tqdm(range(len(ds.moves))):
                 data_buffer_robo.append(robo_frames)
                 break
     if len(data_buffer_kinect) == WRITE_EVERY_N_EPISODES:
-        save_stuff(data_buffer_kinect, data_buffer_robo, save_episode_count)
+        save_stuff(data_buffer_kinect, data_buffer_robo, episode_idx, save_episode_count)
         save_episode_count += 1
         data_buffer_kinect = []
         data_buffer_robo = []
