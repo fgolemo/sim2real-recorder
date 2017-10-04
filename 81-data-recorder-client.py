@@ -1,8 +1,8 @@
-import numpy as np
 import shutil
+
+import numpy as np
 import zmq
 from tqdm import tqdm
-import os
 
 from config.constants import *
 from exchange.utilities import zmq_recv_array
@@ -41,8 +41,7 @@ def move_robot(action):
     output = "|".join(out)
     socket.send_string(output)
 
-
-def save_stuff(data_buf_kinect, data_buf_robo, episode_idx):
+def save_stuff(data_buf_kinect, data_buf_robo, episode_idx, save_episode):
     # print ("got robo frames and kinect frames:")
     # print ("robo:", robo_frames.shape)
     # print ("kinect:", frames.shape)
@@ -51,7 +50,7 @@ def save_stuff(data_buf_kinect, data_buf_robo, episode_idx):
     data_robo = np.array(data_buf_robo)
 
     np.savez_compressed("data/data_dump_tmp.npz", kinect=data_kinect, robo=data_robo)
-    shutil.move("data/data_dump_tmp.npz", "data/data_dump.npz")
+    shutil.move("data/data_dump_tmp.npz", "data/data_dump_{}.npz".format(save_episode))
 
     # hf = h5py.File('data/test-recording.h5', 'w')
     #
@@ -65,6 +64,7 @@ def save_stuff(data_buf_kinect, data_buf_robo, episode_idx):
 data_buffer_kinect = []
 data_buffer_robo = []
 
+save_episode_count = 0
 for episode_idx in tqdm(range(len(ds.moves))):
     actions = np.around(ds.moves[episode_idx, :, 0, :], 2)
     frames = []
@@ -80,7 +80,10 @@ for episode_idx in tqdm(range(len(ds.moves))):
                 data_buffer_kinect.append(frames)
                 data_buffer_robo.append(robo_frames)
                 break
-    if episode_idx % 10 == 0:
-        save_stuff(data_buffer_kinect, data_buffer_robo, episode_idx)
+    if len(data_buffer_kinect) == WRITE_EVERY_N_EPISODES:
+        save_stuff(data_buffer_kinect, data_buffer_robo, save_episode_count)
+        save_episode_count += 1
+        data_buffer_kinect = []
+        data_buffer_robo = []
 
 kinect.close()

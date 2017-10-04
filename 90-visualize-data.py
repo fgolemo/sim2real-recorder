@@ -13,11 +13,15 @@ kinect, robo = data["kinect"], data["robo"]
 
 print (kinect.shape)
 print (robo.shape)
+print (kinect[0].shape)
 
-for i in range(3):
-    for j in range(200):
-        print (np.around(robo[j,i,:,0]))
-quit()
+# quit()
+# for i in range(3):
+#     for j in range(200):
+#         print (np.around(robo[j,i,:,0]))
+
+kinect = kinect[120]
+robo = robo[120]
 
 # iterate over kinect frames and render them to disk
 for i in range(len(kinect)):
