@@ -7,3 +7,9 @@ INITIAL_SPEED = 100
 WRITE_EVERY_N_EPISODES = 20
 SPEEDS=[50,100,200]
 
+USE_BACKUP=True
+BACKUP_HOST="tegra-ubuntu.local"
+BACKUP_USER="ubuntu"
+BACKUP_PASS="ubuntu"
+BACKUP_PATH="/mnt/2TB/flo-robot-data/"
+

@@ -1,6 +1,8 @@
+import os
 import shutil
 
 import numpy as np
+import paramiko
 import zmq
 from tqdm import tqdm
 
@@ -43,34 +45,45 @@ def move_robot(action):
     output = "|".join(out)
     socket.send_string(output)
 
-def save_stuff(data_buf_kinect, data_buf_robo, episode_idx, save_episode):
-    # print ("got robo frames and kinect frames:")
-    # print ("robo:", robo_frames.shape)
-    # print ("kinect:", frames.shape)
 
+def save_stuff(data_buf_kinect, data_buf_robo, episode_idx, save_episode):
     data_kinect = np.array(data_buf_kinect)
     data_robo = np.array(data_buf_robo)
 
     np.savez_compressed("data/data_dump_tmp.npz", kinect=data_kinect, robo=data_robo)
-    shutil.move("data/data_dump_tmp.npz", "data/data_dump_{}.npz".format(save_episode))
+
+    output_filename = "data_dump_{}.npz".format(save_episode)
+    output_path = "data/" + output_filename
+
+    shutil.move("data/data_dump_tmp.npz", output_path)
+
+    if (USE_BACKUP):
+        ssh = paramiko.SSHClient()
+        ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        ssh.connect(BACKUP_HOST, username=BACKUP_USER, password=BACKUP_PASS)
+        sftp = ssh.open_sftp()
+
+        sftp.put(output_path, BACKUP_PATH + output_filename)
+
+        sftp.close()
+        ssh.close()
+        print ("SSH: file transfered")
+        os.remove(output_path)
 
     progress_write(PROGRESS_FILE, episode_idx)
 
-    # hf = h5py.File('data/test-recording.h5', 'w')
-    #
-    # hf.create_dataset('kinect', data=data_kin)
-    # hf.create_dataset('robo', data=data_robo)
-    #
-    # hf.close()
     print ("SAVED. Episode {}".format(episode_idx))
 
+
 progress = progress_read(PROGRESS_FILE)
-print ("LOADED PROGRESS:",progress)
+print ("LOADED PROGRESS:", progress)
 
 data_buffer_kinect = []
 data_buffer_robo = []
 
-save_episode_count = int(progress/WRITE_EVERY_N_EPISODES)
+save_episode_count = int(progress / WRITE_EVERY_N_EPISODES)
 
 for episode_idx in tqdm(range(len(ds.moves))):
     if episode_idx < progress:
