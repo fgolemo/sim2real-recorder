@@ -1,4 +1,5 @@
 import numpy as np
+import zmq
 
 
 def zmq_send_array(socket, A, flags=0, copy=True, track=False):

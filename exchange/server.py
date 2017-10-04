@@ -16,12 +16,13 @@ class Server():
         pass
 
     def welcome(self):
-        self.socket.send("welcome from ergo jr")
+        self.socket.send("welcome from ergo jr", zmq.NOBLOCK)
 
     def register_callback(self, cb):
         self.cb = cb
 
     def start_main_loop(self):
+        print ("STARTING MAIN SERVER LOOP")
         while True:
             msg = self.socket.recv_string()
             if (msg == "quit"):

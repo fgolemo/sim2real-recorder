@@ -10,7 +10,7 @@ poppy = PoppyErgoJr()
 
 server = Server()
 
-server.welcome()
+# server.welcome()
 
 line_buffer = np.zeros((6, 3), dtype=np.float32)
 episode_buffer = np.zeros((SECONDS_OF_RECORDING * MAX_ROBO_FPS, NUMBER_OF_ACTIONS_PER_EPISODE, 6, 3))
@@ -31,7 +31,7 @@ def msg_to_actions(msg):
     assert len(actions) == NUMBER_OF_ACTIONS_PER_EPISODE
     actions_out = []
     for a in actions:
-        actions_out.append(a.split(";"))
+        actions_out.append([round(float(x), 2) for x in a.split(",")])
     return actions_out
 
 
@@ -47,13 +47,11 @@ def robot_rest():
 
 
 def handle_message(msg, send):
+    print ("GOT MSG")
     # whenever the server gets a string msg:
 
     # split string into 3 actions
     actions = msg_to_actions(msg)
-    print ("got actions:")
-    for a in actions:
-        print (a)
 
     # run 3 actions, while recording into buffer
     for action_idx, action in enumerate(actions):
@@ -71,10 +69,9 @@ def handle_message(msg, send):
             time_current = time.time() - time_start
             if time_current >= SECONDS_OF_RECORDING:
                 break
+
         # print("{} frames / {} fps".format(len(frames), round(len(frames) / SECONDS_OF_RECORDING, 2)))
         frames = np.array(frames)
-        print (frames.shape)
-        print (episode_buffer[:len(frames), action_idx, :, :].shape)
         episode_buffer[:len(frames), action_idx, :, :] = frames
 
     # go to resting position
