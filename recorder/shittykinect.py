@@ -33,7 +33,7 @@ class ShittyKinect():
         print("Packet pipeline:", type(pipeline).__name__)
 
         # Create and set logger
-        logger = createConsoleLogger(LoggerLevel.Debug)
+        logger = createConsoleLogger(LoggerLevel.Warning)
         setGlobalLogger(logger)
 
         fn = Freenect2()

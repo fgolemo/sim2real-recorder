@@ -8,8 +8,10 @@ from config.constants import *
 from exchange.utilities import zmq_recv_array
 from movements.dataset import Dataset
 from recorder.shittykinect import ShittyKinect
+from recorder.utilities import progress_write, progress_read
 
 DATASET_PATH_CLEAN = "data/recording1_clean.npz"
+PROGRESS_FILE = "data/recording_progress"
 # EPISODE = 0
 
 # MOTOR 0 & 3 ARE INVERTED
@@ -52,6 +54,8 @@ def save_stuff(data_buf_kinect, data_buf_robo, episode_idx, save_episode):
     np.savez_compressed("data/data_dump_tmp.npz", kinect=data_kinect, robo=data_robo)
     shutil.move("data/data_dump_tmp.npz", "data/data_dump_{}.npz".format(save_episode))
 
+    progress_write(PROGRESS_FILE, episode_idx)
+
     # hf = h5py.File('data/test-recording.h5', 'w')
     #
     # hf.create_dataset('kinect', data=data_kin)
@@ -60,12 +64,18 @@ def save_stuff(data_buf_kinect, data_buf_robo, episode_idx, save_episode):
     # hf.close()
     print ("SAVED. Episode {}".format(episode_idx))
 
+progress = progress_read(PROGRESS_FILE)
+print ("LOADED PROGRESS:",progress)
 
 data_buffer_kinect = []
 data_buffer_robo = []
 
-save_episode_count = 0
+save_episode_count = int(progress/WRITE_EVERY_N_EPISODES)
+
 for episode_idx in tqdm(range(len(ds.moves))):
+    if episode_idx < progress:
+        continue
+
     actions = np.around(ds.moves[episode_idx, :, 0, :], 2)
     frames = []
     move_robot(actions)
