@@ -5,6 +5,7 @@ import numpy as np
 import paramiko
 import zmq
 from tqdm import tqdm
+import time
 
 from config.constants import *
 from exchange.utilities import zmq_recv_array
@@ -94,7 +95,7 @@ for episode_idx in tqdm(range(len(ds.moves))):
     move_robot(actions)
     while True:
         frame = kinect.getFrame()
-        frames.append(frame)
+        frames.append(time.time(), frame)
         socks = dict(poller.poll(1000 * ROBO_FPD_DELAY))
         if socks:
             if socks.get(socket) == zmq.POLLIN:

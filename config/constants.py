@@ -5,11 +5,11 @@ ROBO_FPD_DELAY = 0.01
 ROBO_REST_TIMER = 3.0
 INITIAL_SPEED = 100
 WRITE_EVERY_N_EPISODES = 20
-SPEEDS=[50,100,200]
+SPEEDS = [50, 100, 200]
+SPEED_STD_FACTOR = 4
 
-USE_BACKUP=True
-BACKUP_HOST="tegra-ubuntu.local"
-BACKUP_USER="ubuntu"
-BACKUP_PASS="ubuntu"
-BACKUP_PATH="/mnt/2TB/flo-robot-data/"
-
+USE_BACKUP = False
+BACKUP_HOST = "tegra-ubuntu.local"
+BACKUP_USER = "ubuntu"
+BACKUP_PASS = "ubuntu"
+BACKUP_PATH = "/mnt/2TB/flo-robot-data/"

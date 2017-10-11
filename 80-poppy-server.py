@@ -13,6 +13,7 @@ def set_robot_speed(speed):
     for m in poppy.motors:
         m.goal_speed = speed
 
+
 set_robot_speed(INITIAL_SPEED)
 
 server = Server()
@@ -20,7 +21,6 @@ server = Server()
 # server.welcome()
 
 episode_buffer = np.zeros((SECONDS_OF_RECORDING * MAX_ROBO_FPS, NUMBER_OF_ACTIONS_PER_EPISODE, 6, 3))
-
 
 
 def getRobotData(poppy):
@@ -62,12 +62,13 @@ def handle_message(msg, send):
 
     # run 3 actions, while recording into buffer
     for action_idx, action in enumerate(actions):
-        set_robot_speed(SPEEDS[action_idx])
+        speed = np.random.normal(SPEEDS[action_idx], SPEEDS[action_idx] / SPEED_STD_FACTOR)
+        set_robot_speed(speed)
         frames = []
         time_start = time.time()
         action_was_run = False
         while True:
-            frames.append(getRobotData(poppy))
+            frames.append([getRobotData(poppy), time.time(), speed])
             time.sleep(0.01)  # this caps FPS at around 94 - so we should reserve 100 elements in memory
             if not action_was_run:
                 run_action_on_robot(action)
