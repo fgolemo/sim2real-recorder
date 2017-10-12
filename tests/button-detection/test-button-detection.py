@@ -1,6 +1,6 @@
 import Tkinter as tk
 
-scaling = 6 # how many hundred 
+scaling = 6 # how many hundred
 
 def _create_circle(self, x, y, r, **kwargs):
     return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)

@@ -21,7 +21,7 @@ server = Server()
 # server.welcome()
 
 episode_buffer = np.zeros((SECONDS_OF_RECORDING * MAX_ROBO_FPS, NUMBER_OF_ACTIONS_PER_EPISODE, 6, 3))
-
+episode_buffer_meta = np.zeros((SECONDS_OF_RECORDING * MAX_ROBO_FPS, NUMBER_OF_ACTIONS_PER_EPISODE, 2))
 
 def getRobotData(poppy):
     line_buffer = np.zeros((6, 3), dtype=np.float32)
@@ -65,11 +65,13 @@ def handle_message(msg, send):
         speed = np.random.normal(SPEEDS[action_idx], SPEEDS[action_idx] / SPEED_STD_FACTOR)
         set_robot_speed(speed)
         frames = []
+        frames_meta = []
         time_start = time.time()
         action_was_run = False
         while True:
-            frames.append([getRobotData(poppy), time.time(), speed])
-            time.sleep(0.01)  # this caps FPS at around 94 - so we should reserve 100 elements in memory
+            frames.append(getRobotData(poppy))
+            frames_meta.append([time.time(), speed])
+            time.sleep(ROBO_FPD_DELAY)  # this caps FPS at around 94 - so we should reserve 100 elements in memory
             if not action_was_run:
                 run_action_on_robot(action)
                 action_was_run = True
@@ -80,13 +82,16 @@ def handle_message(msg, send):
 
         # print("{} frames / {} fps".format(len(frames), round(len(frames) / SECONDS_OF_RECORDING, 2)))
         frames = np.array(frames)
+        frames_meta = np.array(frames_meta)
         episode_buffer[:len(frames), action_idx, :, :] = frames
+        episode_buffer_meta[:len(frames), action_idx, :] = frames_meta
 
     # go to resting position
     robot_rest()
 
     # send data
     send(episode_buffer)
+    send(episode_buffer_meta)
 
     episode_buffer.fill(0.0)
 
