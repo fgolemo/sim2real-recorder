@@ -5,17 +5,27 @@ import cv2
 
 # FILE_NAME= "data/data_dump_5.npz" # avg 80
 # FILE_NAME= "data/data_dump_95.npz" # avg 17
-FILE_NAME= "data/data_dump_137.npz" # avg 60
+# FILE_NAME= "data/data_dump_137.npz" # avg 60
+from config.constants import TIME_MULTI
+
+FILE_NAME= "data/data_dump_0.npz" # avg 60
 OUT_PATH = "tests/out/"
 
 data = np.load(FILE_NAME)
 kinect, robo = data["kinect"], data["robo"]
+kinect_time, robo_time, robo_speed = data["kinect_time"], data["robo_time"], data["robo_speed"]
 
 
 
-print (kinect.shape)
-print (robo.shape)
+print ("kinect.shape", kinect.shape)
+print ("kinect_time.shape",kinect_time.shape)
+print ("robo.shape", robo.shape)
+print ("robo_time.shape",robo_time.shape)
+print ("robo_speed.shape",robo_speed.shape)
+
 print (kinect[0].shape)
+print (kinect_time[0].shape)
+
 
 kl = []
 for i in range(len(kinect)):
@@ -23,8 +33,16 @@ for i in range(len(kinect)):
 
 print ("sum:",sum(kl))
 print ("avg:",sum(kl)/len(kl))
+print ("FPS:",sum(kl)/len(kl)/6)
 
-# quit()
+print ("---")
+
+
+print("timings:\nrobot\tkinect")
+for i in range(10):
+    print ("{}\t{}".format(robo_time[0,i,0,0],kinect_time[0][i]))
+
+quit()
 
 
 # for i in range(3):
