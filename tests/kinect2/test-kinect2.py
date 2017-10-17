@@ -90,7 +90,7 @@ while True:
     cv2.imshow("frame", reg_img)
 
     elapsed = time.time() - time_start
-    if elapsed > 10:
+    if elapsed > 3:
         fps = float(len(frame_container)) / elapsed
         print ("FPS:", fps)
         frame_container = []

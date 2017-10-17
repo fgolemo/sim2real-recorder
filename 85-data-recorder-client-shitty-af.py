@@ -157,7 +157,8 @@ for episode_idx in tqdm(range(len(ds.moves))):
     frames_time = []
     move_robot(actions)
 
-    time_start = time.time()
+    time_start_global = time.time()
+    time_start_local = time.time()
     while True:
         raw_frames = listener.waitForNewFrame()
 
@@ -175,13 +176,12 @@ for episode_idx in tqdm(range(len(ds.moves))):
         frames.append(frame)
         frames_time.append(time.time()*TIME_MULTI)
 
-        elapsed = time.time()-time_start
-        if elapsed > 10:
-            fps = float(len(frames))/elapsed
+        elapsed_global = time.time()-time_start_global
+        elapsed_local = time.time()-time_start_local
+        if elapsed_local > 10:
+            fps = float(len(frames))/elapsed_global
             print ("FPS:",fps)
-            frame_container = []
-            frames_time = []
-            time_start = time.time()
+            time_start_local = time.time()
 
         listener.release(raw_frames)
 

@@ -118,7 +118,7 @@ for episode_idx in tqdm(range(len(ds.moves))):
         frame_container.append(frame)
         frames_time.append(time.time()*TIME_MULTI)
         elapsed = time.time()-time_start
-        if elapsed > 10:
+        if elapsed > 5:
             fps = float(len(frame_container))/elapsed
             print ("FPS:",fps)
             frame_container = []

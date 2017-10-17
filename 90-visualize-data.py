@@ -24,7 +24,9 @@ print ("robo_time.shape",robo_time.shape)
 print ("robo_speed.shape",robo_speed.shape)
 
 print (kinect[0].shape)
+print (kinect[1].shape)
 print (kinect_time[0].shape)
+print (kinect_time[1].shape)
 
 
 kl = []

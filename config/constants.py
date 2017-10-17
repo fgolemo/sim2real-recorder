@@ -9,7 +9,7 @@ SPEEDS = [50, 100, 200]
 SPEED_STD_FACTOR = 4
 TIME_MULTI = 1000000
 
-USE_BACKUP = False
+USE_BACKUP = True
 BACKUP_HOST = "tegra-ubuntu.local"
 BACKUP_USER = "ubuntu"
 BACKUP_PASS = "ubuntu"
