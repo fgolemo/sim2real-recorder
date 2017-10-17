@@ -3,6 +3,8 @@
 import numpy as np
 import cv2
 import sys
+
+import time
 from pylibfreenect2 import Freenect2, SyncMultiFrameListener
 from pylibfreenect2 import FrameType, Registration, Frame
 from pylibfreenect2 import createConsoleLogger, setGlobalLogger
@@ -60,7 +62,8 @@ registration = Registration(device.getIrCameraParams(),
 undistorted = Frame(512, 424, 4)
 registered = Frame(512, 424, 4)
 
-
+frame_container = []
+time_start = time.time()
 while True:
     frames = listener.waitForNewFrame()
 
@@ -77,6 +80,8 @@ while True:
               BOUNDARIES["left"]:BOUNDARIES["right"],
               :] # all 4 RGBD channels
 
+    frame_container.append(reg_img)
+
     # # for finding the boundaries... write an image for each extreme position
     # if i==2:
     #     cv2.imwrite("bottom.png", registered.asarray(np.uint8))
@@ -84,6 +89,12 @@ while True:
 
     cv2.imshow("frame", reg_img)
 
+    elapsed = time.time() - time_start
+    if elapsed > 10:
+        fps = float(len(frame_container)) / elapsed
+        print ("FPS:", fps)
+        frame_container = []
+        time_start = time.time()
 
     listener.release(frames)
 

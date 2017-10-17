@@ -5,6 +5,7 @@ from multiprocessing import Queue, Process
 
 import cv2
 import numpy as np
+import time
 from pylibfreenect2 import FrameType, Registration, Frame
 from pylibfreenect2 import Freenect2, SyncMultiFrameListener
 from pylibfreenect2 import LoggerLevel
@@ -20,26 +21,23 @@ BOUNDARIES = {  # img is right-left flipped
 
 def async(q):
     print ("async started")
-    try:
-        print ("A")
-        from pylibfreenect2 import OpenCLPacketPipeline
-        print ("B")
-        pipeline = OpenCLPacketPipeline()
-        print ("C")
-    except:
-        print ("D")
-        try:
-            print ("E")
-            from pylibfreenect2 import OpenGLPacketPipeline
-            print ("F")
-            pipeline = OpenGLPacketPipeline()
-            print ("G")
-        except:
-            print ("H")
-            from pylibfreenect2 import CpuPacketPipeline
-            print ("I")
-            pipeline = CpuPacketPipeline()
-            print ("J")
+    # try:
+    from pylibfreenect2 import OpenCLPacketPipeline
+    pipeline = OpenCLPacketPipeline()
+    # except:
+    #     print ("D")
+    #     try:
+    #         print ("E")
+    #         from pylibfreenect2 import OpenGLPacketPipeline
+    #         print ("F")
+    #         pipeline = OpenGLPacketPipeline()
+    #         print ("G")
+    #     except:
+    #         print ("H")
+    #         from pylibfreenect2 import CpuPacketPipeline
+    #         print ("I")
+    #         pipeline = CpuPacketPipeline()
+    #         print ("J")
     print("Packet pipeline:", type(pipeline).__name__)
 
     # Create and set logger
@@ -106,10 +104,20 @@ print ("starting process")
 p.start()
 print ("process launched")
 
+frame_container = []
+time_start = time.time()
 while True:
     if not q.empty():
-        print ("queue is non-empty")
         reg_img = q.get()
+        frame_container.append(reg_img)
+
+        elapsed = time.time() - time_start
+        if elapsed > 10:
+            fps = float(len(frame_container)) / elapsed
+            print ("FPS:", fps)
+            frame_container = []
+            time_start = time.time()
+
         cv2.imshow("frame", reg_img)
         key = cv2.waitKey(delay=1)
         if key == ord('q'):
@@ -122,4 +130,4 @@ sys.exit(0)
 
 
 
-#todo rewrite so that kinect is the main thread and other thread runs async
+# todo rewrite so that kinect is the main thread and other thread runs async

@@ -14,3 +14,9 @@ BACKUP_HOST = "tegra-ubuntu.local"
 BACKUP_USER = "ubuntu"
 BACKUP_PASS = "ubuntu"
 BACKUP_PATH = "/mnt/2TB/flo-robot-data/"
+BOUNDARIES = { # img is right-left flipped
+    "top": 90,
+    "left": 100,
+    "right": 350,
+    "bottom": 330
+}

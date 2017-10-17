@@ -20,16 +20,16 @@ class ShittyKinect():
 
     @staticmethod
     def kinect_async(q):
-        try:
-            from pylibfreenect2 import OpenCLPacketPipeline
-            pipeline = OpenCLPacketPipeline()
-        except:
-            try:
-                from pylibfreenect2 import OpenGLPacketPipeline
-                pipeline = OpenGLPacketPipeline()
-            except:
-                from pylibfreenect2 import CpuPacketPipeline
-                pipeline = CpuPacketPipeline()
+        # try:
+        from pylibfreenect2 import OpenCLPacketPipeline
+        pipeline = OpenCLPacketPipeline()
+        # except:
+        #     try:
+        #         from pylibfreenect2 import OpenGLPacketPipeline
+        #         pipeline = OpenGLPacketPipeline()
+        #     except:
+        #         from pylibfreenect2 import CpuPacketPipeline
+        #         pipeline = CpuPacketPipeline()
         print("Packet pipeline:", type(pipeline).__name__)
 
         # Create and set logger
