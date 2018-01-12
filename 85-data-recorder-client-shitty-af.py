@@ -1,6 +1,7 @@
 import os
 import shutil
 
+import cv2
 import numpy as np
 import paramiko
 import zmq
@@ -17,6 +18,8 @@ from pylibfreenect2 import FrameType, Registration, Frame
 from pylibfreenect2 import createConsoleLogger, setGlobalLogger
 from pylibfreenect2 import LoggerLevel
 import sys
+
+from threading import Thread
 
 DATASET_PATH_CLEAN = "data/recording1_clean.npz"
 PROGRESS_FILE = "data/recording_progress"
@@ -37,9 +40,11 @@ poller = zmq.Poller()
 poller.register(socket, zmq.POLLIN)
 
 from pylibfreenect2 import OpenCLPacketPipeline
+
 pipeline = OpenCLPacketPipeline()
 logger = createConsoleLogger(LoggerLevel.Debug)
-setGlobalLogger(logger)
+# setGlobalLogger(logger)
+setGlobalLogger(None)
 
 fn = Freenect2()
 num_devices = fn.enumerateDevices()
@@ -65,7 +70,6 @@ registration = Registration(device.getIrCameraParams(),
 undistorted = Frame(512, 424, 4)
 registered = Frame(512, 424, 4)
 
-
 frames = listener.waitForNewFrame()
 
 color = frames["color"]
@@ -82,7 +86,6 @@ reg_img = registered.asarray(np.uint8)[
           :]
 listener.release(frames)
 
-
 print ("got first frame")
 print(reg_img.shape)
 
@@ -97,12 +100,15 @@ def move_robot(action):
     socket.send_string(output)
 
 
-def save_stuff(data_buf_kinect, data_buf_kinect_time, data_buf_robo, data_buf_robo_time, data_buf_robo_speed, episode_idx, save_episode):
+def save_stuff(data_buf_kinect, data_buf_kinect_time, data_buf_robo, data_buf_robo_time, data_buf_robo_speed,
+               episode_idx, save_episode):
     data_kinect = np.array(data_buf_kinect)
     data_kinect_time = np.array(data_buf_kinect_time)
     data_robo = np.array(data_buf_robo)
     data_robo_time = np.array(data_buf_robo_time, dtype=np.uint64)
     data_robo_speed = np.array(data_buf_robo_speed)
+
+    print ("DEBUG: saving snapshot...")
 
     np.savez_compressed("data/data_dump_tmp.npz",
                         kinect=data_kinect,
@@ -117,7 +123,10 @@ def save_stuff(data_buf_kinect, data_buf_kinect_time, data_buf_robo, data_buf_ro
 
     shutil.move("data/data_dump_tmp.npz", output_path)
 
+    print ("DEBUG: saving snapshot done")
+
     if (USE_BACKUP):
+        print ("SSH: uploading file...")
         ssh = paramiko.SSHClient()
         ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -148,6 +157,8 @@ data_buffer_robo_speed = []
 
 save_episode_count = int(progress / WRITE_EVERY_N_EPISODES)
 
+t = None # this will hold the saving thread in the future
+
 for episode_idx in tqdm(range(len(ds.moves))):
     if episode_idx < progress:
         continue
@@ -173,14 +184,20 @@ for episode_idx in tqdm(range(len(ds.moves))):
                 BOUNDARIES["top"]:BOUNDARIES["bottom"],
                 BOUNDARIES["left"]:BOUNDARIES["right"],
                 :]
-        frames.append(frame)
-        frames_time.append(time.time()*TIME_MULTI)
+        frames.append(np.copy(frame))
 
-        elapsed_global = time.time()-time_start_global
-        elapsed_local = time.time()-time_start_local
+        #OPTIONAL: display FPS directly in img:
+        # cv2.putText(image, "Hello World!!!", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
+
+        cv2.imshow("kinect", frame)
+        cv2.waitKey(1)
+        frames_time.append(time.time() * TIME_MULTI)
+
+        elapsed_global = time.time() - time_start_global
+        elapsed_local = time.time() - time_start_local
         if elapsed_local > 10:
-            fps = float(len(frames))/elapsed_global
-            print ("FPS:",fps)
+            fps = float(len(frames)) / elapsed_global
+            print ("FPS:", fps)
             time_start_local = time.time()
 
         listener.release(raw_frames)
@@ -202,13 +219,19 @@ for episode_idx in tqdm(range(len(ds.moves))):
                 data_buffer_robo_speed.append(robo_frames_speed)
                 break
     if len(data_buffer_kinect) == WRITE_EVERY_N_EPISODES:
-        save_stuff(data_buffer_kinect,
-                   data_buffer_kinect_time,
-                   data_buffer_robo,
-                   data_buffer_robo_time,
-                   data_buffer_robo_speed,
-                   episode_idx,
-                   save_episode_count)
+        if t is not None:
+            print ("DEBUG: Old thread found, waiting for thread to finish...")
+            t.join()
+        t = Thread(target=save_stuff, args=(
+            data_buffer_kinect,
+            data_buffer_kinect_time,
+            data_buffer_robo,
+            data_buffer_robo_time,
+            data_buffer_robo_speed,
+            episode_idx,
+            save_episode_count
+        ))
+        t.start()
         save_episode_count += 1
         data_buffer_kinect = []
         data_buffer_kinect_time = []

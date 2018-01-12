@@ -6,7 +6,7 @@ from pypot.creatures import PoppyErgoJr
 from config.constants import *
 from exchange.server import Server
 
-poppy = PoppyErgoJr()
+poppy = PoppyErgoJr(camera='dummy')
 
 
 def set_robot_speed(speed):

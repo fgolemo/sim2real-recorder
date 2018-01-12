@@ -8,7 +8,12 @@ import cv2
 # FILE_NAME= "data/data_dump_137.npz" # avg 60
 from config.constants import TIME_MULTI
 
-FILE_NAME= "data/data_dump_0.npz" # avg 60
+
+for i in range (0,141, 10):
+    print (i)
+quit()
+
+FILE_NAME= "data/data_dump_{}.npz" # avg 60
 OUT_PATH = "tests/out/"
 
 data = np.load(FILE_NAME)

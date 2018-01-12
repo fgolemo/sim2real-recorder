@@ -34,7 +34,8 @@ class ShittyKinect():
 
         # Create and set logger
         logger = createConsoleLogger(LoggerLevel.Warning)
-        setGlobalLogger(logger)
+        # setGlobalLogger(logger)
+        setGlobalLogger(None)
 
         fn = Freenect2()
         num_devices = fn.enumerateDevices()
