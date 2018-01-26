@@ -1,7 +1,6 @@
 import numpy as np
 
 
-
 class Dataset():
     def __init__(self):
         self.moves = None
@@ -32,14 +31,14 @@ class Dataset():
         self.print_status()
 
     def print_status(self):
-        print("moves: ",self.moves.shape)
-        print("tips: ",self.tips.shape)
+        print("moves: ", self.moves.shape)
+        print("tips: ", self.tips.shape)
 
     def print_sample(self):
         shape_moves = self.moves.shape
 
-        print ("random move:", self.moves[np.random.randint(shape_moves[0]), shape_moves[1]-1, shape_moves[2]-1])
-        print ("random tip:", self.tips[np.random.randint(shape_moves[0]), shape_moves[1]-1, shape_moves[2]-1])
+        print ("random move:", self.moves[np.random.randint(shape_moves[0]), shape_moves[1] - 1, shape_moves[2] - 1])
+        print ("random tip:", self.tips[np.random.randint(shape_moves[0]), shape_moves[1] - 1, shape_moves[2] - 1])
 
     def load(self, path):
         data = np.load(path)
@@ -49,8 +48,14 @@ class Dataset():
         self.print_status()
         self.print_sample()
 
+    def getUniqueActionsForEpisode(self, episode):
+        unique_rows = np.unique(self.moves[episode], axis=1)
+        return unique_rows
+
+
 if __name__ == '__main__':
     from movements.constants import JOINT_LIMITS
+
     ds = Dataset()
 
     ds.create(10000, 3, 30, JOINT_LIMITS)

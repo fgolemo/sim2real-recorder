@@ -107,4 +107,4 @@ venv.bak/
 tests/out/
 data/*.npz
 data/*/*.npz
-
+data/gif/
