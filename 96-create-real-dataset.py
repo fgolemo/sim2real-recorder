@@ -1,4 +1,5 @@
 import cv2
+import h5py
 import numpy as np
 import math
 
@@ -91,22 +92,22 @@ ds.load(DATASET_PATH_CLEAN)
 data = np.load(FILE_NAME)
 real_imgs, real_positions, real_speeds = data["real_images"], data["real_positions"], data["real_speeds"]
 
-dataset_current_pos_real = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)
-dataset_current_vel_real = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)
-
-dataset_next_pos_sim = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM input
-dataset_next_vel_sim = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM input
-
-dataset_next_pos_real = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM output
-dataset_next_vel_real = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM output
-
-dataset_current_action = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM input/conditioning
-dataset_current_speed = np.zeros((EPISODES, MAX_FRAMES), dtype=np.float32)
-
-dataset_current_img_real = np.zeros((EPISODES, MAX_FRAMES, IMG_REAL_HEIGHT, IMG_REAL_WIDTH, 4), dtype=np.uint8)
-
-dataset_next_img_real = np.zeros((EPISODES, MAX_FRAMES, IMG_REAL_HEIGHT, IMG_REAL_WIDTH, 4), dtype=np.uint8)
-dataset_next_img_sim = np.zeros((EPISODES, MAX_FRAMES, IMG_SIM_HEIGHT, IMG_SIM_WIDTH, 4), dtype=np.uint8)
+# dataset_current_pos_real = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)
+# dataset_current_vel_real = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)
+#
+# dataset_next_pos_sim = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM input
+# dataset_next_vel_sim = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM input
+#
+# dataset_next_pos_real = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM output
+# dataset_next_vel_real = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM output
+#
+# dataset_current_action = np.zeros((EPISODES, MAX_FRAMES, 6), dtype=np.float32)  # this is LSTM input/conditioning
+# dataset_current_speed = np.zeros((EPISODES, MAX_FRAMES), dtype=np.float32)
+#
+# dataset_current_img_real = np.zeros((EPISODES, MAX_FRAMES, IMG_REAL_HEIGHT, IMG_REAL_WIDTH, 4), dtype=np.uint8)
+#
+# dataset_next_img_real = np.zeros((EPISODES, MAX_FRAMES, IMG_REAL_HEIGHT, IMG_REAL_WIDTH, 4), dtype=np.uint8)
+# dataset_next_img_sim = np.zeros((EPISODES, MAX_FRAMES, IMG_SIM_HEIGHT, IMG_SIM_WIDTH, 4), dtype=np.uint8)
 
 ############## put future for loop here
 RECORDING = 1
@@ -177,4 +178,21 @@ for idx in range(len(real_imgs[RECORDING])):
         episode_next_img_real[idx] = next_real_img
         episode_next_img_sim[idx] = next_sim_img
 
+
+f = h5py.File("96-test-dataset.hdf5", "w")
+f.create_dataset("episode_current_pos_real", data=episode_current_pos_real)
+f.create_dataset("episode_current_vel_real", data=episode_current_vel_real)
+f.create_dataset("episode_next_pos_sim", data=episode_next_pos_sim)
+f.create_dataset("episode_next_vel_sim", data=episode_next_vel_sim)
+f.create_dataset("episode_next_pos_real", data=episode_next_pos_real)
+f.create_dataset("episode_next_vel_real", data=episode_next_vel_real)
+
+f.create_dataset("episode_current_action", data=episode_current_action)
+f.create_dataset("episode_current_speed", data=episode_current_speed)
+
+f.create_dataset("episode_current_img_real", data=episode_current_img_real)
+f.create_dataset("episode_next_img_real", data=episode_next_img_real)
+f.create_dataset("episode_next_img_sim", data=episode_next_img_sim)
+
+f.close()
 
