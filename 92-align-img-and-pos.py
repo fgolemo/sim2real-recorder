@@ -7,6 +7,7 @@ import time
 from tqdm import tqdm
 
 FILE_PREFIX = "/lindata/datasets/sim2real/"
+# FILE_PREFIX = "data/"
 
 no_of_mappings = []
 
