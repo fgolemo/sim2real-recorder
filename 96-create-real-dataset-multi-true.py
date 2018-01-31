@@ -7,14 +7,16 @@ from movements.dataset import Dataset
 from recorder.h5dataset import H5Dataset
 from recorder.simulator import Simulator
 
-PROCESSES = 1
-# DATA_PATH_PREFIX = "/lindata/datasets/sim2real/"
-DATA_PATH_PREFIX = "./data/"
+RANGE_LO, RANGE_HI = 10, 20
+
+PROCESSES = 2
+DATA_PATH_PREFIX = "/lindata/datasets/sim2real/"
+# DATA_PATH_PREFIX = "./data/"
 DATASET_PATH_CLEAN = "./data/recording1_clean.npz"  # contains actions and speeds
-# MASSIVE_OUTPUT_FILE = "/windata/sim2real-full/test-dataset3.hdf5"
-MASSIVE_OUTPUT_FILE = "/media/florian/shapenet/test-dataset4.hdf5"
+MASSIVE_OUTPUT_FILE = "/windata/sim2real-full/dataset-{}-{}.hdf5".format(RANGE_LO, RANGE_HI)
+# MASSIVE_OUTPUT_FILE = "/media/florian/shapenet/test-dataset4.hdf5"
 MAX_FRAMES = 273  # max episode length is 274, so -1 (because we always look one step ahead) is 273
-FILES = [0, 1, 2]
+FILES = list(range(RANGE_LO, RANGE_HI))
 IMG_REAL_WIDTH = 250
 IMG_REAL_HEIGHT = 240
 IMG_SIM_WIDTH = 256
