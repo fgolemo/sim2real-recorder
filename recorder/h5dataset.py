@@ -3,7 +3,7 @@ import numpy as np
 
 
 class H5Dataset(object):
-    def __init__(self, output_file, ep_per_file, frames_per_episode, img_config):
+    def __init__(self, output_file, ep_per_file, frames_per_episode, img_config, low_range_offset):
         self.f = h5py.File(output_file, "w")
         self.epf = ep_per_file
         self.mf = frames_per_episode
@@ -11,6 +11,7 @@ class H5Dataset(object):
         self.irh = img_config["irh"]
         self.isw = img_config["isw"]
         self.ish = img_config["ish"]
+        self.lro = low_range_offset
 
     def flush(self):
         self.f.flush()
@@ -57,22 +58,22 @@ class H5Dataset(object):
                                                   dtype=np.uint8)
 
     def write_episode(self, res):
-        self.current_pos_real[res["file_idx"], res["episode_idx"]] = res["ep_current_pos_real"]
-        self.current_vel_real[res["file_idx"], res["episode_idx"]] = res["ep_current_vel_real"]
+        self.current_pos_real[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_current_pos_real"]
+        self.current_vel_real[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_current_vel_real"]
 
-        self.next_pos_sim[res["file_idx"], res["episode_idx"]] = res["ep_next_pos_sim"]
-        self.next_vel_sim[res["file_idx"], res["episode_idx"]] = res["ep_next_vel_sim"]
+        self.next_pos_sim[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_next_pos_sim"]
+        self.next_vel_sim[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_next_vel_sim"]
 
-        self.next_pos_real[res["file_idx"], res["episode_idx"]] = res["ep_next_pos_real"]
-        self.next_vel_real[res["file_idx"], res["episode_idx"]] = res["ep_next_vel_real"]
+        self.next_pos_real[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_next_pos_real"]
+        self.next_vel_real[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_next_vel_real"]
 
-        self.current_action[res["file_idx"], res["episode_idx"]] = res["ep_current_action"]
-        self.current_speed[res["file_idx"], res["episode_idx"]] = res["ep_current_speed"]
+        self.current_action[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_current_action"]
+        self.current_speed[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_current_speed"]
 
-        self.current_img_real[res["file_idx"], res["episode_idx"]] = res["ep_current_img_real"]
+        self.current_img_real[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_current_img_real"]
 
-        self.next_img_real[res["file_idx"], res["episode_idx"]] = res["ep_next_img_real"]
-        self.next_img_sim[res["file_idx"], res["episode_idx"]] = res["ep_next_img_sim"]
+        self.next_img_real[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_next_img_real"]
+        self.next_img_sim[res["file_idx"]-self.lro, res["episode_idx"]] = res["ep_next_img_sim"]
 
     def get_episode_buffer(self):
         return {
