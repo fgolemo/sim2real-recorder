@@ -54,6 +54,7 @@ class Simulator(object):
 
     def close(self):
         self.venv.stop_simulation()
+        time.sleep(0.1)
         self.venv.end()
 
     def step(self, pos, vel):
