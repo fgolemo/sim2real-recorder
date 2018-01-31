@@ -135,7 +135,7 @@ img_config = {
     "irh": IMG_REAL_HEIGHT
 }
 
-f = H5Dataset(MASSIVE_OUTPUT_FILE, WRITE_EVERY_N_EPISODES, MAX_FRAMES, img_config)
+f = H5Dataset(MASSIVE_OUTPUT_FILE, WRITE_EVERY_N_EPISODES, MAX_FRAMES, img_config, RANGE_LO)
 f.make_dataset(len(FILES))
 
 episode_buffer = f.get_episode_buffer()
