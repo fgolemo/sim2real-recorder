@@ -82,10 +82,8 @@ def simulate_run(config):
 
     sim.reset_sim(real_positions[episode_idx][0, :, 0])
 
-    speed_change_indices = []
     last_speed = real_speeds[episode_idx][0]
 
-    real_actions = []
     current_episode = file_idx * WRITE_EVERY_N_EPISODES + episode_idx + OFFSET
     cmds = ds.getUniqueActionsForEpisode(current_episode)
 
@@ -126,6 +124,7 @@ def simulate_run(config):
             out["ep_next_img_real"][idx] = next_real_img
             out["ep_next_img_sim"][idx] = next_sim_img
 
+    sim.close()
     return out
 
 
