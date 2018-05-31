@@ -12,8 +12,8 @@ from movements.dataset import Dataset
 from vrepper.core import vrepper
 import matplotlib.pyplot as plt
 
-FILE_IDX = 145
-FILE_NAME = "data/data_dump_{}_aligned.npz".format(FILE_IDX)
+FILE_IDX = 13
+FILE_NAME = "/lindata/datasets/sim2real/data_dump_{}_aligned.npz".format(FILE_IDX)
 GIF_OUT = "data/gif/{}/{:03d}.png"
 DATASET_PATH_CLEAN = "data/recording1_clean.npz"
 PROGRESS_FILE = "data/recording_progress"
@@ -23,11 +23,11 @@ PROGRESS_FILE = "data/recording_progress"
 
 ds = Dataset()
 ds.load(DATASET_PATH_CLEAN)
-data = np.load(FILE_NAME)
+data = np.load(FILE_NAME, encoding="bytes")
 real_imgs, real_positions, real_speeds = data["real_images"], data["real_positions"], data["real_speeds"]
 
 ############## put future for loop here
-RECORDING = 1
+RECORDING = 3 # random
 OFFSET = 4 # IDK why
 
 current_episode = FILE_IDX*WRITE_EVERY_N_EPISODES+RECORDING+OFFSET
@@ -128,11 +128,11 @@ for idx, img in enumerate(tqdm(real_imgs[RECORDING])):
         last_speed = real_speeds[RECORDING][idx]
 
     if idx < len(real_imgs[RECORDING]) - 1:
-        next_real_img = np.rot90(real_imgs[RECORDING][idx + 1, :, :, :3], 2, (0, 1))
-        next_sim_img = np.rot90(venv.get_image(cam.handle), 2, (0, 1))
-        combined_img = np.zeros((256, 506, 3), dtype=np.uint8)
-        combined_img[16:, :250, :] = real_img_reshaping(next_real_img)
-        combined_img[:, 250:, :] = next_sim_img
+        # next_real_img = np.rot90(real_imgs[RECORDING][idx + 1, :, :, :3], 2, (0, 1))
+        # next_sim_img = np.rot90(venv.get_image(cam.handle), 2, (0, 1))
+        # combined_img = np.zeros((256, 506, 3), dtype=np.uint8)
+        # combined_img[16:, :250, :] = real_img_reshaping(next_real_img)
+        # combined_img[:, 250:, :] = next_sim_img
         # plt.imsave(GIF_OUT.format(FILE_IDX, idx), combined_img)
 
         diff_real_minus_sim = real_positions[RECORDING][idx + 1, :, 0] - get_motors()
@@ -143,6 +143,7 @@ real_actions.append(get_motors())
 # print (ds.getUniqueActionsForEpisode(current_episode))
 # print (real_actions)
 cmds = ds.getUniqueActionsForEpisode(current_episode)
+print("cmds.shape",cmds.shape)
 
 for action in range(3):
     print ("cmd\t\tsim")
@@ -151,14 +152,14 @@ for action in range(3):
 
     print ("===")
 
-# for i in range(6):
-#     plt.plot(np.arange(len(diffs[:, 0])), diffs[:, i], label="m{}".format(i + 1))
-# plt.title("Joint differences over time (real-sim)")
-# plt.ylabel("Joint difference in degrees")
-# plt.xlabel("Frame")
-#
-# for line_pos in speed_change_indices:
-#     plt.axvline(x=line_pos)
-#
-# plt.legend()
-# plt.show()
+for i in range(6):
+    plt.plot(np.arange(len(diffs[:, 0])), diffs[:, i], label="m{}".format(i + 1))
+plt.title("Joint differences over time (real-sim)")
+plt.ylabel("Joint difference in degrees")
+plt.xlabel("Frame")
+
+for line_pos in speed_change_indices:
+    plt.axvline(x=line_pos)
+
+plt.legend()
+plt.show()
