@@ -31,10 +31,10 @@ ds_curr_real_norm = ds_curr_real.copy()
 ds_next_real_norm = ds_next_real.copy()
 
 ds_curr_real_norm[:, :6] = ((ds_curr_real[:, :6] + 90) / 180) * 2 - 1
-ds_next_real_norm[:, :6] = ((ds_curr_real[:, :6] + 90) / 180) * 2 - 1
+ds_next_real_norm[:, :6] = ((ds_next_real[:, :6] + 90) / 180) * 2 - 1
 
 ds_curr_real_norm[:, 6:] = ((ds_curr_real[:, 6:] - speeds_min) / speeds_diff) * 2 - 1
-ds_next_real_norm[:, 6:] = ((ds_curr_real[:, 6:] - speeds_min) / speeds_diff) * 2 - 1
+ds_next_real_norm[:, 6:] = ((ds_next_real[:, 6:] - speeds_min) / speeds_diff) * 2 - 1
 
 ds_curr_real_norm = np.clip(ds_curr_real_norm, -1, 1)  # to remove overshooting - might be bad
 ds_next_real_norm = np.clip(ds_next_real_norm, -1, 1)  # to remove overshooting
