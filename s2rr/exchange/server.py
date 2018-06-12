@@ -1,7 +1,6 @@
-import numpy
 import zmq
 
-from exchange.utilities import zmq_recv_array, zmq_send_array
+from s2rr.exchange import zmq_recv_array, zmq_send_array
 
 
 class Server():

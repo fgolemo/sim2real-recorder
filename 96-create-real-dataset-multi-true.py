@@ -2,10 +2,10 @@ from multiprocessing.dummy import Pool as ThreadPool
 import numpy as np
 from tqdm import tqdm
 
-from config.constants import WRITE_EVERY_N_EPISODES
-from movements.dataset import Dataset
+from s2rr.config.constants import WRITE_EVERY_N_EPISODES
+from s2rr.movements.dataset import Dataset
 from recorder.h5dataset import H5Dataset
-from recorder.simulator import Simulator
+from s2rr.recorder.simulator import Simulator
 
 RANGE_LO, RANGE_HI = 10, 20
 

@@ -1,16 +1,13 @@
-import cv2
 import numpy as np
-import math
 
 import time
 
 from tqdm import tqdm
 import os
 
-from config.constants import WRITE_EVERY_N_EPISODES
-from movements.dataset import Dataset
+from s2rr.config.constants import WRITE_EVERY_N_EPISODES
+from s2rr.movements.dataset import Dataset
 from vrepper.core import vrepper
-import matplotlib.pyplot as plt
 import h5py
 
 MAX_FRAMES = 273  # max episode length is 274, so -1 (because we always look one step ahead) is 273

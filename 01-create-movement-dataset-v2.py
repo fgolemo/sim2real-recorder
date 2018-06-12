@@ -1,5 +1,4 @@
-from movements.constants import JOINT_LIMITS
-from movements.dataset import Dataset
+from s2rr.movements.dataset import Dataset
 
 ds = Dataset()
 ds.create_normalized(1000, 3, 100)

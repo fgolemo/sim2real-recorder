@@ -1,12 +1,11 @@
 import time
 
-from movements.dataset import Dataset
-from recorder.kinect import Kinect
+from s2rr.movements.dataset import Dataset
 from recorder.robot import Robot
 
 import numpy as np
 
-from recorder.shittykinect import ShittyKinect
+from s2rr.recorder.shittykinect import ShittyKinect
 
 DATASET_PATH_CLEAN = "data/recording1_clean.npz"
 EPISODE = 0

@@ -1,6 +1,6 @@
 import time
 
-from movements.dataset import Dataset
+from s2rr.movements.dataset import Dataset
 from poppy.creatures import PoppyErgoJr
 
 from recorder.experiment import Experiment

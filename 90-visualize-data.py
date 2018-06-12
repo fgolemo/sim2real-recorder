@@ -1,12 +1,10 @@
 from PIL import Image
 
 import numpy as np
-import cv2
 
 # FILE_NAME= "data/data_dump_5.npz" # avg 80
 # FILE_NAME= "data/data_dump_95.npz" # avg 17
 # FILE_NAME= "data/data_dump_137.npz" # avg 60
-from config.constants import TIME_MULTI
 
 
 for i in range (0,141, 10):

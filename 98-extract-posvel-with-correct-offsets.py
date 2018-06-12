@@ -1,12 +1,9 @@
 import numpy as np
 from tqdm import tqdm
-import os
 
-from config.constants import WRITE_EVERY_N_EPISODES
+from s2rr.config.constants import WRITE_EVERY_N_EPISODES
 
-import matplotlib.pyplot as plt
-
-from movements.dataset import Dataset
+from s2rr.movements.dataset import Dataset
 
 FILE_NAME = "/lindata/datasets/sim2real/data_dump_{}_aligned.npz"
 MOVES = "data/recording1_clean.npz"

@@ -1,4 +1,4 @@
-from movements.dataset import Dataset
+from s2rr.movements.dataset import Dataset
 from movements.visualizer import Visualizer
 
 DATASET_PATH = "data/recording2.npz"

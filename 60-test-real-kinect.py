@@ -1,6 +1,6 @@
 import time
 
-from recorder.shittykinect import ShittyKinect
+from s2rr.recorder.shittykinect import ShittyKinect
 
 kinect = ShittyKinect()
 

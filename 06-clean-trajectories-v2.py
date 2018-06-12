@@ -1,4 +1,4 @@
-from movements.dataset import Dataset
+from s2rr.movements.dataset import Dataset
 import numpy as np
 
 

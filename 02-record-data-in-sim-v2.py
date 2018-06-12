@@ -2,7 +2,7 @@ import time
 
 from gym_ergojr.sim.single_robot import SingleRobot
 
-from movements.dataset import Dataset
+from s2rr.movements.dataset import Dataset
 from tqdm import tqdm
 import numpy as np
 

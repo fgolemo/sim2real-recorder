@@ -1,5 +1,5 @@
 from movements.constants import REST_POS
-from movements.dataset import Dataset
+from s2rr.movements.dataset import Dataset
 from recorder.experiment import Experiment
 from tqdm import tqdm
 import numpy as np

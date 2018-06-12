@@ -1,17 +1,9 @@
-import os
-import shutil
-
 import numpy as np
-import paramiko
-import zmq
 from tqdm import tqdm
 import time
 
-from config.constants import *
-from exchange.utilities import zmq_recv_array
-from movements.dataset import Dataset
-from recorder.shittykinect import ShittyKinect
-from recorder.utilities import progress_write, progress_read
+from s2rr.config.constants import *
+from s2rr.movements.dataset import Dataset
 from pylibfreenect2 import Freenect2, SyncMultiFrameListener
 from pylibfreenect2 import FrameType, Registration, Frame
 from pylibfreenect2 import createConsoleLogger, setGlobalLogger

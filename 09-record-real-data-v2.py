@@ -2,7 +2,7 @@ import time
 
 from tqdm import tqdm
 
-from movements.dataset import Dataset
+from s2rr.movements.dataset import Dataset
 import numpy as np
 from poppy_helpers.controller import ZMQController
 

@@ -3,8 +3,8 @@ import time
 import numpy as np
 from pypot.creatures import PoppyErgoJr
 
-from config.constants import *
-from exchange.server import Server
+from s2rr.config.constants import *
+from s2rr.exchange import Server
 
 poppy = PoppyErgoJr(camera='dummy')
 

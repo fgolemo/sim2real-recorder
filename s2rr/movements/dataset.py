@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 
@@ -60,6 +62,37 @@ class Dataset():
         unique_rows = np.unique(self.moves[episode], axis=1)
         return unique_rows
 
+
+class DatasetProduction():
+
+    def __init__(self):
+        self.current_real = None
+        self.next_real = None
+        self.diff_real = None
+        self.next_sim = None
+        self.action = None
+        self.tip = None
+
+    def load(self, path):
+        data = np.load(os.path.expanduser(path))
+        self.current_real = data["current_real"]
+        self.next_real = data["next_real"]
+        self.next_sim = data["next_sim"]
+        self.action = data["action"]
+        self.diff_real = data["diff_real"]
+        self.tip = data["tip"]
+        print("loaded.",self.current_real.shape)
+
+    def save(self, path):
+        np.savez(os.path.expanduser(path),
+                 current_real = self.current_real,
+                 next_real = self.next_real,
+                 diff_real = self.diff_real,
+                 next_sim = self.next_sim,
+                 action = self.action,
+                 tip = self.tip
+                 )
+        print("saved.")
 
 if __name__ == '__main__':
     from movements.constants import JOINT_LIMITS
