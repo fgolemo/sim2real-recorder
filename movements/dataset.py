@@ -5,6 +5,8 @@ class Dataset():
     def __init__(self):
         self.moves = None
         self.tips = None
+        self.jointvel = None
+        self.bad = None
 
     def create(self, episodes, actions_per_episode, frames_per_action, joint_boundaries):
         self.moves = np.zeros((episodes, actions_per_episode, frames_per_action, 6), dtype=np.float32)
@@ -20,15 +22,19 @@ class Dataset():
                 self.moves[ep, act, :, :] = np.tile(actions, (frames_per_action, 1))
 
         self.tips = np.zeros((episodes, actions_per_episode, frames_per_action, 3), dtype=np.float32)
+        self.jointvel = np.zeros((episodes, actions_per_episode, frames_per_action, 12), dtype=np.float32)
+        self.bad = np.zeros((episodes), dtype=np.uint8)
         self.print_sample()
+
+    def create_normalized(self, episodes, actions_per_episode, frames_per_action):
+        return self.create( episodes, actions_per_episode, frames_per_action, [(-1,1)]*6)
 
     def save(self, path):
         if self.moves is None or self.tips is None:
             raise Exception("can't save. no data")
 
-        np.savez(path, moves=self.moves, tips=self.tips)
+        np.savez(path, moves=self.moves, tips=self.tips, jointvel=self.jointvel, bad=self.bad)
         print("saved.")
-        self.print_status()
 
     def print_status(self):
         print("moves: ", self.moves.shape)
@@ -44,6 +50,8 @@ class Dataset():
         data = np.load(path)
         self.moves = data["moves"]
         self.tips = data["tips"]
+        self.jointvel = data["jointvel"]
+        self.bad = data["bad"]
         print("loaded.")
         self.print_status()
         self.print_sample()
