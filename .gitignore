@@ -105,7 +105,7 @@ venv.bak/
 
 .idea/
 tests/out/
-data/*.npz
-data/*/*.npz
+#data/*.npz
+#data/*/*.npz
 data/*.hdf5
 data/gif/
